@@ -1,0 +1,59 @@
+var gridSize = 80
+
+function mod(a, b) {
+  return(((a % b) + b) % b)
+}
+
+class Dot {
+  constructor() {
+    this.lifeGrid = []
+    for(var rowI = 0; rowI < gridSize; rowI ++) {
+      this.lifeGrid[rowI] = []
+      for(var columnI = 0; columnI < gridSize; columnI ++) {
+        this.lifeGrid[rowI][columnI] = floor(random(0,2))
+      }
+    }
+    
+    this.nextLifeGrid = []
+    for(var rowI = 0; rowI < gridSize; rowI ++) {//relies on the ability to override variables
+      this.nextLifeGrid[rowI] = []
+      for(var columnI = 0; columnI < gridSize; columnI ++) {
+        this.nextLifeGrid[rowI][columnI] = 0
+      }
+    }
+  }
+  
+  input(x, y, input) {
+    this.lifeGrid[x][y] = input
+  }
+  
+  output(x, y) {
+    return this.lifeGrid[x][y]
+  }
+  
+  cycle() {
+    for(var rowI = 0; rowI < gridSize; rowI ++) {//relies on the ability to override variables or on locality
+      for(var columnI = 0; columnI < gridSize; columnI ++) {
+        for(var sightI = -1; sightI <= 1; sightI ++) {
+          for(var sightJ = -1; sightJ <= 1; sightJ ++) {
+            if(sightJ != 0 || sightI != 0) {
+              this.nextLifeGrid[rowI][columnI] += this.lifeGrid[mod(rowI + sightI, gridSize)][mod(columnI + sightJ, gridSize)]
+            }
+            //print(this.nextLifeGrid[rowI][columnI])
+          }
+        }
+      }
+    }
+    for(var rowI = 0; rowI < gridSize; rowI ++) {//relies on the ability to override variables
+      for(var columnI = 0; columnI < gridSize; columnI ++) {
+        if(this.nextLifeGrid[rowI][columnI] === 3){//error
+          this.lifeGrid[rowI][columnI] = 1
+        }
+        if(this.nextLifeGrid[rowI][columnI] < 2 || this.nextLifeGrid[rowI][columnI] > 3){
+          this.lifeGrid[rowI][columnI] = 0
+        }
+        this.nextLifeGrid[rowI][columnI] = 0
+      }
+    }
+  }
+}
